@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NutriFlex - Gym Fitness Monitoring System</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background-image:url("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1920&auto=format&fit=crop");
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+}
+
+.overlay{
+    background:rgba(0,0,0,0.7);
+    min-height:100vh;
+    padding:30px;
+}
+
+.container{
+    width:420px;
+    margin:auto;
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(12px);
+    padding:25px;
+    border-radius:15px;
+    color:white;
+    border:1px solid rgba(255,255,255,0.2);
+}
+
+h1,h2{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    font-size:15px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    border-radius:6px;
+    background:#28a745;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    background:#1e7e34;
+}
+
+.backBtn{
+    background:#007bff;
+}
+
+.backBtn:hover{
+    background:#0056b3;
+}
+
+#resultPage{
+    display:none;
+    max-width:1100px;
+    margin:auto;
+    background:rgba(255,255,255,0.95);
+    padding:25px;
+    border-radius:15px;
+    color:black;
+    animation:fadeIn 0.5s ease;
+}
+
+.section{
+    margin-top:30px;
+}
+
+.images{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    justify-content:center;
+    margin-top:15px;
+}
+
+.images img{
+    width:220px;
+    height:150px;
+    object-fit:cover;
+    border-radius:12px;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+    transition:0.3s;
+}
+
+.images img:hover{
+    transform:scale(1.05);
+}
+
+ul{
+    margin-top:15px;
+    line-height:2;
+    font-size:17px;
+}
+
+#nutriFlex{
+    background:rgba(0,0,0,0.05);
+    padding:15px;
+    border-radius:10px;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@media(max-width:768px){
+
+    .container{
+        width:95%;
+    }
+
+    .images img{
+        width:100%;
+        height:220px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+<!-- FORM PAGE -->
+
+<div class="container" id="formPage">
+
+<h1>NutriFlex</h1>
+
+<input type="text" id="name" placeholder="Enter Your Name">
+
+<input type="number" id="age" placeholder="Enter Age">
+
+<select id="gender">
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+</select>
+
+<input type="number" id="height" placeholder="Height (cm)">
+
+<input type="number" id="weight" placeholder="Weight (kg)">
+
+<select id="goal">
+    <option value="loss">Weight Loss</option>
+    <option value="gain">Weight Gain</option>
+    <option value="maintain">Maintain Fitness</option>
+</select>
+
+<button onclick="generatePlan()">Generate Plan</button>
+
+</div>
+
+<!-- RESULT PAGE -->
+
+<div id="resultPage">
+
+<h1>Your Personalized Fitness Plan</h1>
+
+<div id="bmiResult"></div>
+
+<!-- WORKOUT SECTION -->
+
+<div class="section">
+
+<h2>Workout Plan</h2>
+
+<div class="images" id="workoutImages"></div>
+
+<ul id="workoutList"></ul>
+
+</div>
+
+<!-- DIET SECTION -->
+
+<div class="section">
+
+<h2>Diet Plan</h2>
+
+<div class="images" id="dietImages"></div>
+
+<ul id="dietList"></ul>
+
+</div>
+
+<!-- NUTRITION -->
+
+<div class="section">
+
+<h2>NutriFlex Smart Nutrition</h2>
+
+<ul id="nutriFlex"></ul>
+
+</div>
+
+<button class="backBtn" onclick="goBack()">Back</button>
+
+</div>
+
+</div>
+
+<script>
+
+function generatePlan(){
+
+    let name = document.getElementById("name").value;
+    let age = document.getElementById("age").value;
+    let height = document.getElementById("height").value / 100;
+    let weight = document.getElementById("weight").value;
+    let goal = document.getElementById("goal").value;
+    let gender = document.getElementById("gender").value;
+
+    if(!name || age <= 0 || height <= 0 || weight <= 0){
+
+        alert("Please enter valid details!");
+        return;
+    }
+
+    // BMI
+
+    let bmi = weight / (height * height);
+
+    let category = "";
+    let bmiColor = "";
+    let tip = "";
+
+    if(bmi < 18.5){
+
+        category = "Underweight";
+        bmiColor = "orange";
+        tip = "Focus on healthy weight gain.";
+
+    }else if(bmi < 24.9){
+
+        category = "Normal Weight";
+        bmiColor = "green";
+        tip = "Great! Maintain your fitness.";
+
+    }else if(bmi < 29.9){
+
+        category = "Overweight";
+        bmiColor = "goldenrod";
+        tip = "Increase physical activity.";
+
+    }else{
+
+        category = "Obese";
+        bmiColor = "red";
+        tip = "Consult a fitness trainer.";
+    }
+
+    document.getElementById("bmiResult").innerHTML = `
+    
+    <h2>Hello ${name}</h2>
+
+    <p style="font-size:22px; color:${bmiColor};">
+    <b>Your BMI:</b> ${bmi.toFixed(2)} (${category})
+    </p>
+
+    <p>${tip}</p>
+    `;
+
+    let workout = "";
+    let workoutImages = "";
+
+    let diet = "";
+    let dietImages = "";
+
+    // WEIGHT LOSS
+
+    if(goal === "loss"){
+
+        workout = `
+        <li>Running - 30 Minutes</li>
+        <li>Cycling - 20 Minutes</li>
+        <li>HIIT Training</li>
+        <li>Jump Rope</li>
+        `;
+
+        workoutImages = `
+
+        <img src="https://images.unsplash.com/photo-1483721310020-03333e577078?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1549476464-37392f717541?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1200&auto=format&fit=crop">
+
+        `;
+
+        diet = `
+        <li>Oats & Fruits</li>
+        <li>Green Salads</li>
+        <li>Boiled Eggs</li>
+        <li>Grilled Chicken</li>
+        `;
+
+        dietImages = `
+        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?q=80&w=1200&auto=format&fit=crop">
+        `;
+    }
+
+    // WEIGHT GAIN
+
+    else if(goal === "gain"){
+
+        workout = `
+        <li>Weight Lifting</li>
+        <li>Bench Press</li>
+        <li>Squats</li>
+        <li>Deadlifts</li>
+        `;
+
+        workoutImages = `
+        <img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=1200&auto=format&fit=crop">
+        `;
+
+        diet = `
+        <li>Eggs & Milk</li>
+        <li>Rice & Chicken</li>
+        <li>Protein Shakes</li>
+        <li>Peanut Butter & Banana</li>
+        `;
+
+        dietImages = `
+        <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1604908177522-402f2c1f98e6?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1579722821273-0f6c1f88f7e9?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1585238342024-78d387f4a707?q=80&w=1200&auto=format&fit=crop">
+        `;
+    }
+
+    // MAINTAIN FITNESS
+
+    else{
+
+        workout = `
+        <li>Yoga</li>
+        <li>Stretching</li>
+        <li>Light Cardio</li>
+        <li>Morning Walk</li>
+        `;
+
+        workoutImages = `
+        <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop">
+        `;
+
+        diet = `
+        <li>Balanced Diet</li>
+        <li>Vegetables & Fruits</li>
+        <li>Whole Grains</li>
+        <li>Healthy Snacks</li>
+        `;
+
+        dietImages = `
+        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1482049016688-2d3e1b311543?q=80&w=1200&auto=format&fit=crop">
+        `;
+    }
+
+    // EXTRA WORKOUTS
+
+    if(gender === "female"){
+
+        workout += `<li>Pilates Training</li>`;
+
+    }else{
+
+        workout += `<li>Push-Ups</li>`;
+    }
+
+    document.getElementById("workoutList").innerHTML = workout;
+    document.getElementById("workoutImages").innerHTML = workoutImages;
+
+    document.getElementById("dietList").innerHTML = diet;
+    document.getElementById("dietImages").innerHTML = dietImages;
+
+    // SMART NUTRITION
+
+    let calories = 0;
+    let protein = 0;
+    let water = (weight * 0.033).toFixed(2);
+
+    if(goal === "loss"){
+
+        calories = weight * 22;
+        protein = weight * 1.5;
+
+    }else if(goal === "gain"){
+
+        calories = weight * 30;
+        protein = weight * 2;
+
+    }else{
+
+        calories = weight * 26;
+        protein = weight * 1.2;
+    }
+
+    document.getElementById("nutriFlex").innerHTML = `
+    
+    <li><b>Daily Calories:</b> ${calories} kcal</li>
+
+    <li><b>Protein:</b> ${protein.toFixed(1)} g/day</li>
+
+    <li><b>Water Intake:</b> ${water} Liters/day</li>
+
+    <li>Eat meals every 3-4 hours</li>
+
+    <li>Sleep minimum 7-8 hours daily</li>
+    `;
+
+    localStorage.setItem("lastBMI", bmi.toFixed(2));
+
+    document.getElementById("formPage").style.display = "none";
+
+    document.getElementById("resultPage").style.display = "block";
+}
+
+function goBack(){
+
+    document.getElementById("resultPage").style.display = "none";
+
+    document.getElementById("formPage").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
